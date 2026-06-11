@@ -29,6 +29,6 @@ urlpatterns = [
     path('api/contributions/',include('contributions.urls')),
     path('api/token/',TokenObtainPairView.as_view()),
     path('api/token/refresh/',TokenRefreshView.as_view()),
-    
+    path('api/security/',include('security.urls')),
 ]
 
