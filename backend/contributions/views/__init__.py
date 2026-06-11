@@ -1,0 +1,4 @@
+from .pagibig_views import PagIbigDetailView,PagIbigListView
+from .philhealth_views import PhilHealthDetailView,PhilHealthListView
+from .sss_views import SSSContributionListView,SSSContributionDetailView
+from .withholding_tax import WithHoldingListView,WithHoldingDetailsView

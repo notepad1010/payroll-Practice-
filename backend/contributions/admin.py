@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .model import WithHoldingTaxBracket, SSSContribution, PhilhealthContribution, PagIBIGContribution
+from .models import WithHoldingTaxBracket, SSSContribution, PhilhealthContribution, PagIBIGContribution
 
 # Register your models here.
 admin.site.register(WithHoldingTaxBracket)

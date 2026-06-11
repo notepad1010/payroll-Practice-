@@ -26,6 +26,7 @@ urlpatterns = [
     path('api/hr/',include('hr.urls')),
     path('api/attendance/',include('attendance.urls')),
     path('api/payroll/',include('payroll.urls')),
+    path('api/contributions/',include('contributions.urls')),
     path('api/token/',TokenObtainPairView.as_view()),
     path('api/token/refresh/',TokenRefreshView.as_view()),
     
