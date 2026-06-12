@@ -49,4 +49,16 @@ class ChangePasswordRequestSerializer(serializers.Serializer):
             raise serializers.ValidationError('No account found with this email.')
         return value
     
+
+class PasswordResetComfimationSerializer(serializers.Serializer):
+    reset_request_id = serializers.IntegerField()
+    otp = serializers.CharField(required=False, allow_blank=True)
+    otp_code = serializers.CharField(required=False, allow_blank=True)
+    new_password = serializers.CharField(required=False, allow_blank=True, write_only=True, min_length=8)
+    
+    def validate(self, data):
+        # At least one OTP field should be provided
+        if not data.get('otp') and not data.get('otp_code'):
+            raise serializers.ValidationError('OTP is required.')
+        return data
     
