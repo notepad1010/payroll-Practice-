@@ -1,1 +1,2 @@
-from .auth_views import LoginView,LogoutView
+from .auth_views import LoginView,LogoutView,ChangePasswordView,PasswordResetConfirmView,PasswordResetRequestView
+from .user_view import LockUnlockUserView,AccountDetailsView,UserAccountlistView

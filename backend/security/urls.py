@@ -1,5 +1,13 @@
 from django.urls import path
-from security.views.auth_views import LoginView,LogoutView,ChangePasswordView,PasswordResetRequestView,PasswordResetConfirmView
+from security.views.auth_views import (LoginView,
+                                       LogoutView,
+                                       ChangePasswordView,
+                                       PasswordResetRequestView,
+                                       PasswordResetConfirmView)
+from security.views.user_view import(AccountDetailsView,
+                                     LockUnlockUserView,
+                                     UserAccountlistView)
+
 
 urlpatterns = [
     path('login/',LoginView.as_view()),
@@ -7,4 +15,7 @@ urlpatterns = [
     path('change-password/',ChangePasswordView.as_view()),
     path('password-reset/',PasswordResetRequestView.as_view()),
     path('password-reset/confirm',PasswordResetConfirmView.as_view()),
+    path('user/',UserAccountlistView.as_view()),
+    path('user/<int:pk>/',AccountDetailsView.as_view()),
+    path('user/<int:pk>/<str:action>/',LockUnlockUserView.as_view()),
 ]

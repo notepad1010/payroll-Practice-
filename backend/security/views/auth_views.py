@@ -114,14 +114,17 @@ class PasswordResetConfirmView(APIView):
         if not serializer.is_valid():
             return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
         
-        reset_request_id = serializer.validated_data.get('reset_request_id')
+        reset_request_id = serializer.validated_data['reset_request_id']
+        otp_code = serializer.validated_data['otp_code']
+        new_password = serializer.validated_data['new_password']
+
         try:
-            reset_request = PasswordResetRequest.objects.get(id=reset_request_id, request_status='PENDING')
+            reset_request = PasswordResetRequest.objects.get(id = reset_request_id,request_status = 'PENDING')
         except PasswordResetRequest.DoesNotExist:
             return Response({'error':'Invalid or Expired reset request.'},status=status.HTTP_400_BAD_REQUEST)
         
         try:
-            two_factor = TwoFactorCode.objects.get(reset_request=reset_request, is_used=False)
+            two_factor = TwoFactorCode.objects.get(reset_request = reset_request,is_used = False)
         except TwoFactorCode.DoesNotExist:
             return Response({'error':'OTP Not Found! or already used'},status=status.HTTP_400_BAD_REQUEST)
         
@@ -135,32 +138,26 @@ class PasswordResetConfirmView(APIView):
             reset_request.user_account.save()
             return Response({'error':'Too many failed attemp. Account is now Locked!'},status=status.HTTP_400_BAD_REQUEST)
         
-        otp = serializer.validated_data.get('otp') or serializer.validated_data.get('otp_code')
-        if not otp:
-            return Response({'error':'OTP is required.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        otp_hash = hashlib.sha256(otp.encode()).hexdigest()
-
-        if otp_hash != two_factor.otp_code_hash:
+        otp_haslib = hashlib.sha3_256(otp_code.encode()).hexdigest()
+        if two_factor.otp_code_hash != otp_haslib:
             two_factor.attemp_count += 1
             two_factor.save()
-            return Response({'error':'Invalid OTP.'}, status=status.HTTP_400_BAD_REQUEST)
+            remaining = self.MAX_ATTEMP - two_factor.attemp_count
+            return Response({'error':f'Incorrect OTP. {remaining} attemp(s) remaining'},status=status.HTTP_400_BAD_REQUEST)
+        
+        user = reset_request.user_account
+        user.set_password(new_password)
+        user.save()
 
         two_factor.is_used = True
-        two_factor.used_at = date.today()
+        two_factor.used_at = date.today
         two_factor.save()
-
+        
         reset_request.request_status = 'COMPLETED'
+        reset_request.create_at = date.today()
         reset_request.save()
 
-        new_password = serializer.validated_data.get('new_password')
-        if new_password:
-            user = reset_request.user_account
-            user.set_password(new_password)
-            user.save()
 
-        return Response({'message':'Password has been reset successfully.'}, status=status.HTTP_200_OK)
-        
         
         
 
