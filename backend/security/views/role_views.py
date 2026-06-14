@@ -89,3 +89,22 @@ class AssignPermissionToRoleView(APIView):
         RolePermission.objects.bulk_create([RolePermission(role = role,permission = p) for p in permissions])
         return Response(RoleSerializer(role).data)
     
+class PermissionListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self,request):
+        permission = Permission.objects.all().order_by('permission_key')
+        serializer = PermissionSerializer(permission,many = True)
+        return Response(serializer.data)
+    
+    def post(self,request):
+        if not request.user.is_staff:
+            return Response({'Error':'Access Denied!'},status=status.HTTP_403_FORBIDDEN)
+        serializer = PermissionSerializer(data = request.data)
+        if not serializer.is_valid():
+            return Response({serializer.error},status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()
+        return Response(serializer.data,status=status.HTTP_201_CREATED)
+
+class PermissionDetailsView(APIView):
+    permission_classes = [IsAuthenticated]
