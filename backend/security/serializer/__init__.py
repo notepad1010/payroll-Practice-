@@ -5,3 +5,7 @@ from .serializers import (PasswordResetComfimationSerializer,
 
 from.user_serializers import(UserAccountCreateSerializer,
                              userAccountSerializer)
+
+from .role_serializers import (RoleSerializer,
+                               PermissionSerializer,
+                               RolePermissionSerializer)

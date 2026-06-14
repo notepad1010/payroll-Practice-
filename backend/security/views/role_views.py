@@ -16,7 +16,7 @@ class RoleListView(APIView):
     
     def post(self,request):
         if not request.user.is_staff:
-            return Response({'error','Access Denied!'},status=status.HTTP_403_FORBIDDEN)
+            return Response({'error': 'Access Denied!'}, status=status.HTTP_403_FORBIDDEN)
         serializer = RoleSerializer(data = request.data)
         if serializer.is_valid():
             serializer.save()
@@ -50,7 +50,7 @@ class RoleDetailView(APIView):
         serializer = RoleSerializer(role,data = request.data)
         if not serializer.is_valid():
             return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
-        serializer.save
+        serializer.save()
         return Response(serializer.data,status=status.HTTP_202_ACCEPTED)
     
     def delete(self,request,pk):
@@ -75,11 +75,19 @@ class AssignPermissionToRoleView(APIView):
 
     def post(self,request,pk):
         if not request.user.is_staff:
-            return Response({'error':'Access Denial'},status=status.HTTP_403_FORBIDDEN)
+            return Response({'error':'Access Denied'},status=status.HTTP_403_FORBIDDEN)
         role = self.get_object(pk)
         if not role:
             return Response({'error':'Role Not Found!'},status=status.HTTP_404_NOT_FOUND)
         permission_ids = request.data.get('permission_ids',[])
+
+        # Validate permission_ids is a list
+        if not isinstance(permission_ids, list):
+            return Response({'error': 'permission_ids must be a list'},status=status.HTTP_400_BAD_REQUEST)
+
+        # Validate all elements are integers
+        if not all(isinstance(pid, int) for pid in permission_ids):
+            return Response({'error': 'All permission IDs must be integers'},status=status.HTTP_400_BAD_REQUEST)
 
         permissions = Permission.objects.filter(id__in = permission_ids)
         if permissions.count() !=  len(permission_ids):
@@ -87,7 +95,8 @@ class AssignPermissionToRoleView(APIView):
 
         RolePermission.objects.filter(role = role).delete()
         RolePermission.objects.bulk_create([RolePermission(role = role,permission = p) for p in permissions])
-        return Response(RoleSerializer(role).data)
+        return Response(RoleSerializer(role).data,status=status.HTTP_200_OK)
+    
     
 class PermissionListView(APIView):
     permission_classes = [IsAuthenticated]
@@ -99,12 +108,46 @@ class PermissionListView(APIView):
     
     def post(self,request):
         if not request.user.is_staff:
-            return Response({'Error':'Access Denied!'},status=status.HTTP_403_FORBIDDEN)
+            return Response({'error':'Access Denied!'},status=status.HTTP_403_FORBIDDEN)
         serializer = PermissionSerializer(data = request.data)
         if not serializer.is_valid():
-            return Response({serializer.error},status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
         serializer.save()
         return Response(serializer.data,status=status.HTTP_201_CREATED)
 
 class PermissionDetailsView(APIView):
     permission_classes = [IsAuthenticated]
+
+    def get_object(self,pk):
+        try:
+            return Permission.objects.get(pk = pk)
+        except Permission.DoesNotExist:
+            return None
+        
+    def get(self,request,pk):
+        permission = self.get_object(pk)
+        if not permission:
+            return Response({'error':'Not Found!'},status=status.HTTP_404_NOT_FOUND)
+        return Response(PermissionSerializer(permission).data)
+    
+    def put(self,request,pk):
+        if not request.user.is_staff:
+            return Response({'error':'Access Denied'},status=status.HTTP_403_FORBIDDEN)
+        permission = self.get_object(pk)
+        if not permission:
+            return Response({'error':'Not Found!'},status=status.HTTP_404_NOT_FOUND)
+        serializer = PermissionSerializer(permission,data = request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()
+        return Response(serializer.data,status=status.HTTP_200_OK)
+    
+    def delete(self,request,pk):
+        if not request.user.is_staff:
+            return Response({'error':'Access Denied'},status=status.HTTP_403_FORBIDDEN)
+        permission = self.get_object(pk)
+        if not permission:
+            return Response({'error':'Not Found!'},status=status.HTTP_404_NOT_FOUND)
+        permission.delete()
+        return Response({'message':'Deleted!'},status=status.HTTP_204_NO_CONTENT)
+    
