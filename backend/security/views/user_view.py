@@ -19,7 +19,7 @@ class UserAccountlistView(APIView):
         if not request.user.is_staff:
             return Response({'error':'Admin access required!'},status=status.HTTP_403_FORBIDDEN)
         serializer = UserAccountCreateSerializer(data = request.data)
-        if serializer.is_valid:
+        if serializer.is_valid():
             user = serializer.save()
             return Response(userAccountSerializer(user).data,status=status.HTTP_201_CREATED)
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
@@ -37,19 +37,19 @@ class AccountDetailsView(APIView):
         user = self.get_object(pk)
         if not user:
             return Response({'error':'Not Found'},status=status.HTTP_404_NOT_FOUND)
-        if not request.user.is_Staff and request.user.id != pk: 
+        if not request.user.is_staff and request.user.id != pk: 
             return Response({'error':'access denied'},status=status.HTTP_403_FORBIDDEN)
         serializer = userAccountSerializer(user)
         return Response(serializer.data)
     
     def put(self,request,pk):
         if not request.user.is_staff:
-            return Response({'error','access denied'},status=status.HTTP_403_FORBIDDEN)
+            return Response({'error': 'access denied'}, status=status.HTTP_403_FORBIDDEN)
         user = self.get_object(pk)
         if not user:
             return Response({'error':'Not Found!'},status=status.HTTP_404_NOT_FOUND)
         serializer = userAccountSerializer(user, data = request.data , partial = True)
-        if serializer.is_valid:
+        if serializer.is_valid():
             serializer.save()
             return Response(serializer.data,status=status.HTTP_200_OK)
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
@@ -59,7 +59,7 @@ class AccountDetailsView(APIView):
             return Response({'error':'access denied!'},status=status.HTTP_403_FORBIDDEN)
         user = self.get_object(pk)
         if not user:
-            return Response({'error','Not Found!'},status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'Not Found!'}, status=status.HTTP_404_NOT_FOUND)
         if user.id == request.user.id:
             return Response({'error':'you cannot deactive your own account'},status=status.HTTP_400_BAD_REQUEST)
         user.is_active = False
