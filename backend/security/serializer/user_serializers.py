@@ -50,12 +50,12 @@ class UserAccountCreateSerializer(serializers.ModelSerializer):
         ]
     
     def validate_data(self,data):
-        if data['passwod'] != data['confirm_password']:
+        if data['password'] != data['confirm_password']:
             raise serializers.ValidationError({'error':'password Dont Match'})
         return data
     
     def validate_employee(self,value):
-        if value and UserAccount.objects.get(employee=value).exists():
+        if value and UserAccount.objects.filter(employee=value).exists():
             raise serializers.ValidationError({'This Employee already has a user account'})
         return value
     

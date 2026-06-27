@@ -61,7 +61,7 @@ class PasswordResetRequestView(APIView):
     permission_classes = [AllowAny]
 
     def post(self,request):
-        seriliazer = ChangePasswordRequestSerializer.objects.get(data = request.data)
+        seriliazer = ChangePasswordRequestSerializer(data = request.data)
         if not seriliazer.is_valid():
             return Response(seriliazer.error,status=status.HTTP_400_BAD_REQUEST)
         
@@ -79,11 +79,11 @@ class PasswordResetRequestView(APIView):
         request_reset = PasswordResetRequest.objects.create(
             user_account = user,
             request_status = 'PENDING',
-            request_create_at = date.today
+            request_create_at = date.today()
         )
 
         #generate a 6 digit otp
-        otp = ''.join(random.choice('0123456789',k=6))
+        otp = ''.join(random.choices('0123456789',k=6))
 
         #hash it before saving 
         otp_hash = hashlib.sha256(otp.encode()).hexdigest()
@@ -104,7 +104,7 @@ class PasswordResetRequestView(APIView):
             'reset_request_id': request_reset.id,
             'otp_dev_only': otp,  # remove this in production!
         }, status=status.HTTP_201_CREATED)
-    
+        
 class PasswordResetConfirmView(APIView):
     permission_classes = [AllowAny]
     MAX_ATTEMP = 5
@@ -138,7 +138,7 @@ class PasswordResetConfirmView(APIView):
             reset_request.user_account.save()
             return Response({'error':'Too many failed attemp. Account is now Locked!'},status=status.HTTP_400_BAD_REQUEST)
         
-        otp_haslib = hashlib.sha3_256(otp_code.encode()).hexdigest()
+        otp_haslib = hashlib.sha256(otp_code.encode()).hexdigest()
         if two_factor.otp_code_hash != otp_haslib:
             two_factor.attemp_count += 1
             two_factor.save()
@@ -150,12 +150,15 @@ class PasswordResetConfirmView(APIView):
         user.save()
 
         two_factor.is_used = True
-        two_factor.used_at = date.today
+        two_factor.used_at = date.today()
         two_factor.save()
         
         reset_request.request_status = 'COMPLETED'
         reset_request.create_at = date.today()
         reset_request.save()
+        
+        return Response({'message':'password has been reset successfully'},status=status.HTTP_200_OK)
+    
 
 
         

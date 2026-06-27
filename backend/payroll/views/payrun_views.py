@@ -47,7 +47,7 @@ class PayrunDetailsView(APIView):
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
     
     def delete(self,request,pk):
-        payrun = self.get.object(pk)
+        payrun = self.get_object(pk)
         if not payrun:
             return Response({'error':'Not Found!'},status=status.HTTP_404_NOT_FOUND)
         payrun.delete()

@@ -1,11 +1,21 @@
-from django.shortcuts import render
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from .models import Department, Position , Employee
-from .serializers import DepartmentSerializer,PositionSerializer,EmployeeSerializer
-
+from .models import (Department,
+                     Position ,
+                     Employee,
+                     GovernmentDetails,
+                     SalaryHistory,
+                     BenefitType,
+                     EmployeeBenefit)
+from .serializers import (DepartmentSerializer,
+                          PositionSerializer,
+                          EmployeeSerializer,
+                          GovernmentDetailsSerializer,
+                          SalaryHistorySerializer,
+                          BenefitTypeSerializer,
+                          EmployeeBenefitSerielizer)
 # Create your views here.
 class DepartmentListView(APIView):
     permission_classes = [IsAuthenticated]
@@ -154,8 +164,193 @@ class PositionDetailView(APIView):
         position.save()
         return Response({"Message":"Position deactivated"},status=status.HTTP_204_NO_CONTENT)
     
+class GovermentListView(APIView):
+    permission_classes = [IsAuthenticated]
     
+    def get(self,request):
+        goverment = GovernmentDetails.object.all()
+        serializer = GovernmentDetailsSerializer(goverment,many = True)
+        return Response(serializer.data,status = status.HTTP_200_OK)
     
+    def post(self,request):
+        serializer = GovernmentDetailsSerializer(data = request.data)
+        if not serializer.is_valid():
+            return Response(serializer.error,status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()
+        return Response(serializer.data,status = status.HTTP_201_CREATED)
     
+class GovermentDetailViews(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get_object(self,pk):
+        try:
+            return GovernmentDetails.object.get(pk = pk)
+        except GovernmentDetails.DoesNotExist:
+            return None
+        
+    def get(self,request,pk):
+        goverment = self.get_object(pk)
+        if not goverment:
+            return Response({'error' : 'Not Found!'},status=status.HTTP_404_NOT_FOUND)
+        serilizer = GovernmentDetailsSerializer(goverment)
+        return Response(serilizer.data,status=status.HTTP_200_OK)
+    
+    def put(self,request,pk):
+        goverment = self.get_object(pk)
+        if not goverment:
+            return Response({'error':'Not Found!'},status=status.HTTP_404_NOT_FOUND)
+        serializer = GovernmentDetailsSerializer(goverment)
+        if not serializer.is_valid():
+            return Response(serializer.error,status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()
+        return Response(serializer.data,status=status.HTTP_202_ACCEPTED)
+    
+    def delete(self,request,pk):
+        goverment = self.get_object(pk)
+        if not goverment:
+            return Response({'error':'Not Found!'},status=status.HTTP_404_NOT_FOUND)
+        goverment.delete()
+        return Response({'Message':'Deleted successfully'},status=status.HTTP_204_NO_CONTENT)
+    
+class SalaryHistoryListView(APIView):
+        permission_classes = [IsAuthenticated]
+    
+        def get(self,request):
+            salary_history = SalaryHistory.object.all()
+            serializer = SalaryHistorySerializer(salary_history,many = True)
+            return Response(serializer.data,status = status.HTTP_200_OK)
+        
+        def post(self,request):
+            serializer = SalaryHistorySerializer(data = request.data)
+            if not serializer.is_valid():
+                return Response(serializer.error,status=status.HTTP_400_BAD_REQUEST)
+            serializer.save()
+            return Response(serializer.data,status= status.HTTP_201_CREATED)
+        
+class SalaryHistoryDetailView(APIView):
 
+    permission_classes = [IsAuthenticated]
+        
+    def get_object(self,request,pk):
+        try:
+            return SalaryHistory.object.get(pk = pk)
+        except SalaryHistory.DoesNotExist:
+            return None
     
+    def get(self,request,pk):
+        salary_history = self.get_object(pk)
+        serializer = SalaryHistorySerializer(salary_history)
+        return Response(serializer.data)
+    
+    def put(self,request,pk):
+        salary_history = self.get_object(pk)
+        if not salary_history:
+            return Response({'error':'Not Found!'},status=status.HTTP_404_NOT_FOUND)
+        serializer = SalaryHistorySerializer(salary_history,data = request.data)
+        if not serializer.is_valid():
+            return Response(serializer.error,status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()
+        return Response(serializer.data,status=status.HTTP_200_OK)
+    
+    def delete(self,request,pk):
+        salary_history = self.get_object(pk)
+        if not salary_history:
+            return Response({'error':'Not Found!'},status=status.HTTP_404_NOT_FOUND)
+        salary_history.delete()
+        return Response({'Message':'Deleted successfully'},status=status.HTTP_204_NO_CONTENT)
+
+            
+class BenefitTypeListView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self,request):
+        benefit_type = BenefitType.object.all()
+        serializer = BenefitTypeSerializer(benefit_type)
+        return Response(serializer.data,status = status.HTTP_200_OK)
+
+    def post(self,request):
+        serializer = BenefitTypeSerializer(data = request.data)
+        if not serializer.is_valid():
+            return Response(serializer.error,status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()
+        return Response(serializer.data,status=status.HTTP_201_CREATED)
+    
+class BenefitTypeDetailsVIew(APIView):
+     permission_classes = [IsAuthenticated]
+     
+     def get_object(self,pk):
+         try:
+            return BenefitType.object.get(pk = pk)
+         except BenefitType.DoesNotExist:
+            return None
+     def get(self,request,pk):
+        benefit_type = self.get_object(pk)
+        if not benefit_type:
+            return Response({'error':'Not Found!'},status=status.HTTP_404_NOT_FOUND)
+        serializer = BenefitTypeSerializer(benefit_type)
+        return Response(serializer.data,status=status.HTTP_200_OK)
+    
+     def put(self,request,pk):
+        benefit_type = self.get_object(pk)
+        if not benefit_type:
+            return Response({'error':'Not Found!'},status=status.HTTP_404_NOT_FOUND)
+        serializer = BenefitTypeSerializer(benefit_type,data = request.data)
+        if not serializer.is_valid():
+            return Response(serializer.error,status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()
+        return Response(serializer.data,status=status.HTTP_202_ACCEPTED)
+    
+     def delete(self,request,pk):
+         benefit_type = self.get_object(pk)
+         if not benefit_type:
+             return Response({'error':'Not Found!'},status=status.HTTP_404_NOT_FOUND)
+         benefit_type.delete()
+         return Response({'Message':'Deleted successfully'},status=status.HTTP_204_NO_CONTENT)
+     
+class EmployeeBenefitListView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self,request):
+        employee_benefit = BenefitType.object.all()
+        serializer = EmployeeBenefitSerielizer(employee_benefit,many = True)
+        return Response (serializer.data,status = status.HTTP_200_OK)
+    
+    def post(self,request):
+        serializer = BenefitTypeSerializer(data = request.data)
+        if not serializer.is_valid():
+            return Response(serializer.error,status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()
+        return Response(serializer.data,status = status.HTTP_201_CREATED)
+    
+class EmployeeBenefitDetailsView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get_object(self,request,pk):
+        try:
+            return EmployeeBenefit.object.get(pk = pk)
+        except EmployeeBenefit.DoesNotExist:
+            return None
+        
+    def get(self,request,pk):
+        employee_benefit = self.get_object(pk)
+        if not employee_benefit:
+            return Response({'error':'Not Found!'},status=status.HTTP_404_NOT_FOUND)
+        serializer = EmployeeBenefitSerielizer(employee_benefit)
+        return Response(serializer.data,status=status.HTTP_200_OK)
+    
+    def put(self,request,pk):
+        employee_benefit = self.get_object(pk)
+        if not employee_benefit:
+            return Response({'error':'Not Found!'},status=status.HTTP_404_NOT_FOUND)
+        serializer = EmployeeBenefitSerielizer(employee_benefit,data = request.data)
+        if not serializer.is_valid():
+            return Response(serializer.error,status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()
+        return Response(serializer.data,status = status.HTTP_202_ACCEPTED)
+    
+    def delete(self,request,pk):
+         employee_benefit = self.get_object(pk)
+         if not employee_benefit:
+            return Response({'error':'Not Found!'},status=status.HTTP_404_NOT_FOUND)
+         employee_benefit.delete()
+         return Response({'Message':'Deleted successfully'},status=status.HTTP_204_NO_CONTENT)

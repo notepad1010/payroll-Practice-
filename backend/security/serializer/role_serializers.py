@@ -1,7 +1,7 @@
 from security.models import Role,RolePermission,Permission
 from rest_framework import serializers
 
-class PermissionSerializer(serializers.ModelField):
+class PermissionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Permission
         fields = '__all__'
@@ -13,7 +13,7 @@ class RolePermissionSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class RoleSerializer(serializers.ModelSerializer):
-    Permission = serializers.SerializerMethodField()
+    permissions = serializers.SerializerMethodField()
 
     class Meta:
         model = Role
@@ -21,20 +21,20 @@ class RoleSerializer(serializers.ModelSerializer):
             'id',
             'role_name',
             'description',
-            'permission',
+            'permissions',
             'create_at',
             'update_at'
         ]
 
         read_only_fields = ['create_at','update_at']
 
-        def get_permission(self,obj):
-            role_permission = RolePermission.objects.filter(role = obj).select_related('permission')
+    def get_permission(self,obj):
+        role_permission = RolePermission.objects.filter(role = obj).select_related('permission')
 
-            return[{
+        return[{
                 'id':rp.permission.id,
                 'permission_key':rp.permission.permission_key,
                 'description': rp.permission.description,
             }
-            for rp in Permission
+            for rp in role_permission
             ]
