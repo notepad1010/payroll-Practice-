@@ -27,7 +27,7 @@ def calculate_sss(basic_salary,pay_date):
             return Decimal('0.00')
         
         excess = basic_salary -bracket.excess_over
-        sss = bracket.base_tax + (excess * bracket.tax_rate/Decimal('100'))
+        sss = bracket.base_tax + (excess * bracket.tax_rate/ Decimal('100'))
         return sss.quantize(Decimal('0.01'))
     
     except Exception:
@@ -59,12 +59,12 @@ def calculate_pagibig(basic_salary, pay_date):
             max_salary__gte= basic_salary,
             min_salary__lte=basic_salary,
             effective_start_date__lte=pay_date,
-            effective_end_date__gte= pay_date,
+            effective_end_date__isnull= True,
         ).filter(
             effective_end_date__isnull= True
         ).first() or PagIBIGContribution.objects.filter(
-            max_salary__lte= basic_salary,
-            min_salary__gte= basic_salary,
+            max_salary__gte= basic_salary,
+            min_salary__lte= basic_salary,
             effective_start_date__lte= pay_date,
             effective_end_date__gte= pay_date,
         ).first()
@@ -84,9 +84,9 @@ def calculation_withhoding_tax(basic_salary,pay_date):
         bracket = WithHoldingTaxBracket.objects.filter(
             min_salary__lte= basic_salary,
             max_salary__gte= basic_salary,
-            effective_end_date__lte= pay_date,
+            effective_start_date__lte= pay_date,
         ).filter(
-            effective_start_date__isnull= True
+            effective_end_date__isnull= True
         ).first() or WithHoldingTaxBracket.objects.filter(
             min_salary__lte= basic_salary,
             max_salary__gte= basic_salary,
@@ -214,7 +214,7 @@ def compute_payroll_for_employee(employee,payrun):
         PayrollOvertime.objects.create(
             payroll_result=payroll_result,
             overtime_type= overtime_type,
-            hours_worked= overtime_hours,
+            hours_worked= overtime_hours,   
             hourly_rate= hourly_rate,
             amount= overtime_pay
         )
