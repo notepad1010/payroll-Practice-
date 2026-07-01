@@ -30,7 +30,9 @@ class userAccountSerializer(serializers.ModelSerializer):
     
     def get_role_name(self,obj):
         if obj.role:
-            return obj.role.name
+            return obj.role.role_name
+        return None
+    
         
 class UserAccountCreateSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only = True,min_length = 8)
@@ -49,17 +51,18 @@ class UserAccountCreateSerializer(serializers.ModelSerializer):
             'is_staff',
         ]
     
-    def validate_data(self,data):
+    def validate(self,data):
         if data['password'] != data['confirm_password']:
             raise serializers.ValidationError({'error':'password Dont Match'})
         return data
     
     def validate_employee(self,value):
         if value and UserAccount.objects.filter(employee=value).exists():
-            raise serializers.ValidationError({'This Employee already has a user account'})
+            raise serializers.ValidationError('This Employee already has a user account')
         return value
     
     def create(self, validated_data):
+        validated_data.pop('confirm_password')
         password = validated_data.pop('password')
         user = UserAccount(**validated_data)
         user.set_password(password)

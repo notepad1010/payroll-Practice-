@@ -168,14 +168,14 @@ class GovermentListView(APIView):
     permission_classes = [IsAuthenticated]
     
     def get(self,request):
-        goverment = GovernmentDetails.object.all()
+        goverment = GovernmentDetails.objects.all()
         serializer = GovernmentDetailsSerializer(goverment,many = True)
         return Response(serializer.data,status = status.HTTP_200_OK)
     
     def post(self,request):
         serializer = GovernmentDetailsSerializer(data = request.data)
         if not serializer.is_valid():
-            return Response(serializer.error,status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
         serializer.save()
         return Response(serializer.data,status = status.HTTP_201_CREATED)
     
@@ -184,7 +184,7 @@ class GovermentDetailViews(APIView):
     
     def get_object(self,pk):
         try:
-            return GovernmentDetails.object.get(pk = pk)
+            return GovernmentDetails.objects.get(pk = pk)
         except GovernmentDetails.DoesNotExist:
             return None
         
@@ -199,9 +199,9 @@ class GovermentDetailViews(APIView):
         goverment = self.get_object(pk)
         if not goverment:
             return Response({'error':'Not Found!'},status=status.HTTP_404_NOT_FOUND)
-        serializer = GovernmentDetailsSerializer(goverment)
+        serializer = GovernmentDetailsSerializer(goverment, data = request.data)
         if not serializer.is_valid():
-            return Response(serializer.error,status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
         serializer.save()
         return Response(serializer.data,status=status.HTTP_202_ACCEPTED)
     
@@ -216,14 +216,14 @@ class SalaryHistoryListView(APIView):
         permission_classes = [IsAuthenticated]
     
         def get(self,request):
-            salary_history = SalaryHistory.object.all()
+            salary_history = SalaryHistory.objects.all()
             serializer = SalaryHistorySerializer(salary_history,many = True)
             return Response(serializer.data,status = status.HTTP_200_OK)
         
         def post(self,request):
             serializer = SalaryHistorySerializer(data = request.data)
             if not serializer.is_valid():
-                return Response(serializer.error,status=status.HTTP_400_BAD_REQUEST)
+                return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
             serializer.save()
             return Response(serializer.data,status= status.HTTP_201_CREATED)
         
@@ -231,14 +231,16 @@ class SalaryHistoryDetailView(APIView):
 
     permission_classes = [IsAuthenticated]
         
-    def get_object(self,request,pk):
+    def get_object(self,pk):
         try:
-            return SalaryHistory.object.get(pk = pk)
+            return SalaryHistory.objects.get(pk = pk)
         except SalaryHistory.DoesNotExist:
             return None
     
     def get(self,request,pk):
         salary_history = self.get_object(pk)
+        if not salary_history:
+            return Response({'error':'Not Found!'},status=status.HTTP_404_NOT_FOUND)
         serializer = SalaryHistorySerializer(salary_history)
         return Response(serializer.data)
     
@@ -248,7 +250,7 @@ class SalaryHistoryDetailView(APIView):
             return Response({'error':'Not Found!'},status=status.HTTP_404_NOT_FOUND)
         serializer = SalaryHistorySerializer(salary_history,data = request.data)
         if not serializer.is_valid():
-            return Response(serializer.error,status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
         serializer.save()
         return Response(serializer.data,status=status.HTTP_200_OK)
     
@@ -264,14 +266,14 @@ class BenefitTypeListView(APIView):
     permission_classes = [IsAuthenticated]
     
     def get(self,request):
-        benefit_type = BenefitType.object.all()
-        serializer = BenefitTypeSerializer(benefit_type)
+        benefit_type = BenefitType.objects.all()
+        serializer = BenefitTypeSerializer(benefit_type,many = True)
         return Response(serializer.data,status = status.HTTP_200_OK)
 
     def post(self,request):
         serializer = BenefitTypeSerializer(data = request.data)
         if not serializer.is_valid():
-            return Response(serializer.error,status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
         serializer.save()
         return Response(serializer.data,status=status.HTTP_201_CREATED)
     
@@ -280,7 +282,7 @@ class BenefitTypeDetailsVIew(APIView):
      
      def get_object(self,pk):
          try:
-            return BenefitType.object.get(pk = pk)
+            return BenefitType.objects.get(pk = pk)
          except BenefitType.DoesNotExist:
             return None
      def get(self,request,pk):
@@ -296,7 +298,7 @@ class BenefitTypeDetailsVIew(APIView):
             return Response({'error':'Not Found!'},status=status.HTTP_404_NOT_FOUND)
         serializer = BenefitTypeSerializer(benefit_type,data = request.data)
         if not serializer.is_valid():
-            return Response(serializer.error,status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
         serializer.save()
         return Response(serializer.data,status=status.HTTP_202_ACCEPTED)
     
@@ -311,23 +313,23 @@ class EmployeeBenefitListView(APIView):
     permission_classes = [IsAuthenticated]
     
     def get(self,request):
-        employee_benefit = BenefitType.object.all()
+        employee_benefit = EmployeeBenefit.objects.all()
         serializer = EmployeeBenefitSerielizer(employee_benefit,many = True)
         return Response (serializer.data,status = status.HTTP_200_OK)
     
     def post(self,request):
-        serializer = BenefitTypeSerializer(data = request.data)
+        serializer = EmployeeBenefitSerielizer(data = request.data)
         if not serializer.is_valid():
-            return Response(serializer.error,status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
         serializer.save()
         return Response(serializer.data,status = status.HTTP_201_CREATED)
     
 class EmployeeBenefitDetailsView(APIView):
     permission_classes = [IsAuthenticated]
     
-    def get_object(self,request,pk):
+    def get_object(self,pk):
         try:
-            return EmployeeBenefit.object.get(pk = pk)
+            return EmployeeBenefit.objects.get(pk = pk)
         except EmployeeBenefit.DoesNotExist:
             return None
         
@@ -344,7 +346,7 @@ class EmployeeBenefitDetailsView(APIView):
             return Response({'error':'Not Found!'},status=status.HTTP_404_NOT_FOUND)
         serializer = EmployeeBenefitSerielizer(employee_benefit,data = request.data)
         if not serializer.is_valid():
-            return Response(serializer.error,status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
         serializer.save()
         return Response(serializer.data,status = status.HTTP_202_ACCEPTED)
     

@@ -4,6 +4,10 @@ from .views.payrun_views import(
     PayrunListView , PayrunDetailsView
 )
 
+from .views.compute_views import(
+    ComputePayrollView,ComputePayrollEmployeeView,PayrollResultByPayrunView
+)
+
 from .views.payroll_views import (
      OverTimeListView , OverTimeTypeDetailsView,
     EarningTypeListView , EarningTypeDetailsView,
@@ -14,10 +18,15 @@ from .views.payroll_views import (
     PayrollOvertimeListView , PayrollOvertimeDetailView,
     PayrollDeductionListView , PayrollDeductionDetailView
 )
+
 urlpatterns  = [
     #PAYRUN
 path('payrun/',PayrunListView.as_view()),
 path('payrun/<int:pk>/',PayrunDetailsView.as_view()),
+
+path('compute/<int:payrun_id>/',ComputePayrollView.as_view()),
+path('compute/<int:payrun_id>/employee/<int:employee_id>/',ComputePayrollEmployeeView.as_view()),
+path('results/<int:payrun_id>/',PayrollResultByPayrunView.as_view()),
 
 path('overtime-list/',OverTimeListView.as_view()),
 path('overtime-list/<int:pk>/', OverTimeTypeDetailsView.as_view()),
@@ -25,6 +34,7 @@ path('earning-type/',EarningTypeListView.as_view()),
 path('earning-type/<int:pk>/',EarningTypeDetailsView.as_view()),
 path('deduction-type/',DeductionTypeListView.as_view()),
 path('deduction-type/<int:pk>/',DeductionTypeDetailView.as_view()),
+
 path('payroll-result/',PayrollResultListView.as_view()),
 path('payroll-result/<int:pk>/', PayrollResultDetailView.as_view()),
 path('payroll-benefit/',PayrollBenefitListView.as_view()),

@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny,IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
-from security.serializers import LoginSerializer,ChangePasswordSerializer,ChangePasswordRequestSerializer,PasswordResetComfimationSerializer
+from security.serializer import LoginSerializer, ChangePasswordSerializer, ChangePasswordRequestSerializer, PasswordResetComfimationSerializer
 import random
 import hashlib
 from datetime import date, timedelta
@@ -48,7 +48,7 @@ class ChangePasswordView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self,request):
-        serializer = ChangePasswordSerializer(data = request.data, content = {'request':request})
+        serializer = ChangePasswordSerializer(data = request.data, context = {'request':request})
         if not serializer.is_valid():
             return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
         user = request.user
@@ -63,10 +63,10 @@ class PasswordResetRequestView(APIView):
     def post(self,request):
         seriliazer = ChangePasswordRequestSerializer(data = request.data)
         if not seriliazer.is_valid():
-            return Response(seriliazer.error,status=status.HTTP_400_BAD_REQUEST)
+            return Response(seriliazer.errors,status=status.HTTP_400_BAD_REQUEST)
         
         #get User
-        email = seriliazer.validate_data['company_email']
+        email = seriliazer.validated_data['company_email']
         user = UserAccount.objects.get(company_email = email)
 
         #cancel existing password request pending
@@ -79,7 +79,7 @@ class PasswordResetRequestView(APIView):
         request_reset = PasswordResetRequest.objects.create(
             user_account = user,
             request_status = 'PENDING',
-            request_create_at = date.today()
+            request_at = date.today()
         )
 
         #generate a 6 digit otp
@@ -115,8 +115,8 @@ class PasswordResetConfirmView(APIView):
             return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
         
         reset_request_id = serializer.validated_data['reset_request_id']
-        otp_code = serializer.validated_data['otp_code']
-        new_password = serializer.validated_data['new_password']
+        otp_code = serializer.validated_data.get('otp') or serializer.validated_data.get('otp_code')
+        new_password = serializer.validated_data.get('new_password')
 
         try:
             reset_request = PasswordResetRequest.objects.get(id = reset_request_id,request_status = 'PENDING')
@@ -145,20 +145,21 @@ class PasswordResetConfirmView(APIView):
             remaining = self.MAX_ATTEMP - two_factor.attemp_count
             return Response({'error':f'Incorrect OTP. {remaining} attemp(s) remaining'},status=status.HTTP_400_BAD_REQUEST)
         
-        user = reset_request.user_account
-        user.set_password(new_password)
-        user.save()
+        if new_password:
+            user = reset_request.user_account
+            user.set_password(new_password)
+            user.save()
 
         two_factor.is_used = True
         two_factor.used_at = date.today()
         two_factor.save()
-        
+            
         reset_request.request_status = 'COMPLETED'
-        reset_request.create_at = date.today()
+        reset_request.complete_at  = date.today()
         reset_request.save()
-        
+            
         return Response({'message':'password has been reset successfully'},status=status.HTTP_200_OK)
-    
+        
 
 
         

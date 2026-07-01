@@ -28,7 +28,7 @@ class RoleSerializer(serializers.ModelSerializer):
 
         read_only_fields = ['create_at','update_at']
 
-    def get_permission(self,obj):
+    def get_permissions(self,obj):
         role_permission = RolePermission.objects.filter(role = obj).select_related('permission')
 
         return[{
@@ -37,4 +37,4 @@ class RoleSerializer(serializers.ModelSerializer):
                 'description': rp.permission.description,
             }
             for rp in role_permission
-            ]
+        ]
