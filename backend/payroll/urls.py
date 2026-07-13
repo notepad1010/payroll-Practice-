@@ -19,6 +19,10 @@ from .views.payroll_views import (
     PayrollDeductionListView , PayrollDeductionDetailView
 )
 
+from views.payslip_views import(
+    PayslipView,PayslipByPayrunView
+)
+
 urlpatterns  = [
     #PAYRUN
 path('payrun/',PayrunListView.as_view()),
@@ -45,4 +49,8 @@ path('payroll-overtime/',PayrollOvertimeListView.as_view()),
 path('payroll-overtime/<int:pk>/',PayrollOvertimeDetailView.as_view()),
 path('payroll-deduction/',PayrollDeductionListView.as_view()),
 path('payroll-deduction/<int:pk>/',PayrollDeductionDetailView.as_view()),
+
+path('payslip/<int:payrun_id>',PayrunListView.as_view()),
+path('payslip/<int:payrun_id>/<int:employee_id>/', PayslipView.as_view()),
+
 ]

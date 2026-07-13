@@ -58,7 +58,7 @@ class ComputePayrollEmployeeView(APIView):
                 'payrun_id': payrun_id,
                 'total_hours_worked': str(result.total_hours_worked),
                 'gross_pay': str(result.gross_pay),
-                'total_deduction' : str(result.total_deductions),
+                'total_deductions' : str(result.total_deductions),
                 'net_pay': str(result.net_pay),
                 'earnings' : PayrollResultSerializer(result).data.get('earnings',[])
                 
@@ -94,7 +94,7 @@ class PayrollResultByPayrunView(APIView):
             'employee_name' : r.employee.full_name,
             'total_worked_hours' : str(r.total_hours_worked),
             'gross_pay' : str(r.gross_pay),
-            'total_deduction' : str(r.total_deductions),
+            'total_deductions' : str(r.total_deductions),
             'net_pay' : str(r.net_pay),
             'generated_at' : str(r.generate_at),
         }for r in results]

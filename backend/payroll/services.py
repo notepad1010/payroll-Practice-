@@ -260,7 +260,7 @@ def compute_payroll_for_payrun(payrun):
                 'employee_id': employee.id,
                 'employee_name' : employee.full_name,
                 'gross_pay': str(payroll_result.gross_pay),
-                'total_deduction' : str(payroll_result.total_deductions),
+                'total_deductions' : str(payroll_result.total_deductions),
                 'net_pay': str(payroll_result.net_pay),
             })
             

@@ -203,7 +203,7 @@ class GovermentDetailViews(APIView):
         if not serializer.is_valid():
             return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
         serializer.save()
-        return Response(serializer.data,status=status.HTTP_202_ACCEPTED)
+        return Response(serializer.data,status=status.HTTP_200_OK)
     
     def delete(self,request,pk):
         goverment = self.get_object(pk)
@@ -300,7 +300,7 @@ class BenefitTypeDetailsVIew(APIView):
         if not serializer.is_valid():
             return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
         serializer.save()
-        return Response(serializer.data,status=status.HTTP_202_ACCEPTED)
+        return Response(serializer.data,status=status.HTTP_200_OK)
     
      def delete(self,request,pk):
          benefit_type = self.get_object(pk)
@@ -348,7 +348,7 @@ class EmployeeBenefitDetailsView(APIView):
         if not serializer.is_valid():
             return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
         serializer.save()
-        return Response(serializer.data,status = status.HTTP_202_ACCEPTED)
+        return Response(serializer.data,status = status.HTTP_200_OK)
     
     def delete(self,request,pk):
          employee_benefit = self.get_object(pk)

@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from attendance.models import LeaveApproval,LeaveCredits,LeaveRequest,LeaveStatus,LeaveType
 from attendance.serializers import LeaveApprovalSerializers,LeaveCreditsSerializers,LeaveRequestSerializers,LeaveStatusSerializers,LeaveTypeSerializers
+from attendance.services import process_leave_approval,reverse_leave_approval
 
 class LeaveApprovalListView(APIView):
     permission_classes = [IsAuthenticated]
@@ -15,11 +16,19 @@ class LeaveApprovalListView(APIView):
     
     def post(self,request):
         serializer = LeaveApprovalSerializers(data = request.data)
-        if serializer.is_valid():
-            serializer.save()
+        if not serializer.is_valid():
+            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            leave_approval = serializer.save()
+            process_leave_approval(leave_approval)
             return Response(serializer.data,status=status.HTTP_201_CREATED)
-        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
-    
+        except ValueError as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({
+                'error' : f'Leave Approval failed : {e}'
+            },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 class LeaveApprovalViewDetails(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -50,9 +59,15 @@ class LeaveApprovalViewDetails(APIView):
         leave_approval = self.get_object(pk)
         if not leave_approval:
             return Response({"error": "Not Found!"},status=status.HTTP_404_NOT_FOUND)
-        leave_approval.delete()
-        return Response({"message":"Deleted!"},status = status.HTTP_204_NO_CONTENT)
-    
+        try:
+            reverse_leave_approval(leave_approval)
+            leave_approval.delete()
+            return Response({"message":"Deleted!"},status = status.HTTP_204_NO_CONTENT)
+        except ValueError as e:
+            return Response ({'error' : str(e)},status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({'error' : f' Cancellation failed: {e}'},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
 
 class LeaveCreditsListDetails(APIView):
     permission_classes = [IsAuthenticated]
