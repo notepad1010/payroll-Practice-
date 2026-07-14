@@ -230,7 +230,7 @@ def compute_payroll_for_employee(employee,payrun):
         ('SSS Contribution', sss_amount),
         ('PhilHealth Contribution', philhealth_amount),
         ('PagIBIG Contribution', pagibig_amount),
-        ('Withhoding Tax',tax_amount),
+        ('Withholding Tax',tax_amount),
     ]
     
     for deduction_name,amount in deduction_map:

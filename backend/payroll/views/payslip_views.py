@@ -4,6 +4,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from payroll.models import PayRun,PayrollResult,PayrollOvertime,PayrollBenefit,PayrollDeduction,PayrollEarning
 from hr.models import Employee
+from decimal import Decimal
+
 
 
 class PayslipView(APIView):
@@ -11,7 +13,7 @@ class PayslipView(APIView):
     
     def get(self,request,payrun_id,employee_id):
         try:
-            payrun = PayRun.objects.get(id = payrun_id)
+            payrun = PayRun.objects.get(pk = payrun_id)
         except PayRun.DoesNotExist:
             return Response({'error':'Payrun not found'},status=status.HTTP_404_NOT_FOUND)
         
@@ -23,10 +25,10 @@ class PayslipView(APIView):
         try:
             payroll_result = PayrollResult.objects.get( payrun=payrun,employee=employee)
         except PayrollResult.DoesNotExist:
-            return Response({'error':f'Payroll result for {employee.full_name} not found'},status=status.HTTP_404_NOT_FOUND)
+            return Response({'error':'No payroll result found. Please compute payroll first.'},status=status.HTTP_404_NOT_FOUND)
         
         earnings = []
-        total_earning = 0
+        total_earning = Decimal('0.00')
         for earning in PayrollEarning.objects.filter(payroll_result=payroll_result).select_related('earning_type'):
             earnings.append({
                 'name':earning.earning_type.earning_name,
@@ -36,7 +38,7 @@ class PayslipView(APIView):
             total_earning += earning.amount
             
         overtime_list = []
-        total_overtime = 0
+        total_overtime = Decimal('0.00')
         for ot in PayrollOvertime.objects.filter(payroll_result=payroll_result).select_related('overtime_type'):
             overtime_list.append({
                 'name': ot.overtime_type.overtime_name,
@@ -47,7 +49,7 @@ class PayslipView(APIView):
             total_overtime += ot.amount
             
         benefits = []
-        total_benefits = 0
+        total_benefits = Decimal('0.00')
         for benefit in PayrollBenefit.objects.filter(payroll_result=payroll_result).select_related('benefit_type'):
             benefits.append({
                 'name': benefit.benefit_type.benefit_name,
@@ -56,11 +58,11 @@ class PayslipView(APIView):
             total_benefits += benefit.amount
             
         deductions = []
-        total_deduction = 0
+        total_deduction = Decimal('0.00')
         for deduction in PayrollDeduction.objects.filter(payroll_result=payroll_result).select_related('deduction_type'):
             deductions.append({
                 'name': deduction.deduction_type.deduction_name,
-                'taxble':deduction.deduction_type.is_taxable,
+                'taxable':deduction.deduction_type.is_taxable,
                 'amount': str(deduction.amount)
             })
             total_deduction += deduction.amount 
@@ -71,7 +73,7 @@ class PayslipView(APIView):
                 'full_name': employee.full_name,
                 'position': employee.position.position_name,
                 'department': employee.department.department_name,
-                'employee_status': employee.employment_status,
+                'employment_status': employee.employment_status,
                 'hire_date' : str(employee.hire_date)
             },
             'payrun': {
@@ -118,7 +120,7 @@ class PayslipByPayrunView(APIView):
             employee = payroll_result.employee
             earnings = [{
             'name' : e.earning_type.earning_name,
-            'amout': e.amount
+            'amount': str(e.amount)
             }for e in PayrollEarning.objects.filter(payroll_result=payroll_result).select_related('earning_type')]
             
             overtime_list = [{
@@ -132,7 +134,7 @@ class PayslipByPayrunView(APIView):
                 'amount' : str(b.amount) 
             }for b in PayrollBenefit.objects.filter(payroll_result=payroll_result).select_related('benefit_type')]
             
-            deduction = [{
+            deductions = [{
                 'name': d.deduction_type.deduction_name,
                 'amount': str(d.amount)
             } for d in PayrollDeduction.objects.filter(payroll_result=payroll_result).select_related('deduction_type')]
@@ -143,12 +145,12 @@ class PayslipByPayrunView(APIView):
                     'full_name' : employee.full_name,
                     'position': employee.position.position_name if employee.position else None,
                     'department': employee.department.department_name if employee.department else None,
-                    'employee_status' : employee.employment_status
+                    'employment_status' : employee.employment_status
                 },
                 'earnings': earnings,
                 'overtime' : overtime_list,
                 'benefits' : benefits,
-                'deduction' : deduction,
+                'deductions' : deductions,
                 'summary': {
                     'total_hours_worked' : str(payroll_result.total_hours_worked),
                     'gross_pay': str(payroll_result.gross_pay),
@@ -158,7 +160,7 @@ class PayslipByPayrunView(APIView):
             })
         return Response({
             'payrun' :{
-                'payrun_id' : payrun.id,
+                'id' : payrun.id,
                 'start_date': str(payrun.start_date),
                 'end_date': str(payrun.end_date),
                 'pay_date': str(payrun.pay_date),
