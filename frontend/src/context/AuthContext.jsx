@@ -9,9 +9,7 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const token = localStorage.getItem('access_token')
-    if (token) {
-      setUser({ token })
-    }
+    if (token) setUser({ token })
     setLoading(false)
   }, [])
 
