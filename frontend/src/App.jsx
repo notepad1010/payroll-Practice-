@@ -3,10 +3,10 @@ import { AuthProvider } from './context/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
-import EmployeeList from './pages/EmployeeList'
-import AttendanceList from './pages/AttendanceList'
-import LeaveRequestList from './pages/LeaveRequestList'
-import PayrunList from './pages/PayrunList'
+import EmployeeList from './pages/employees/EmployeeList'
+import AttendanceList from './pages/attendance/AttendanceList'
+import LeaveRequestList from './pages/leave/LeaveRequestList'
+import PayrunList from './pages/payroll/PayrunList'
 
 export default function App() {
   return (
