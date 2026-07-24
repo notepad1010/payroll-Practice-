@@ -27,5 +27,6 @@ path('employee-benefit/',views.EmployeeBenefitListView.as_view()),
 path('employee-benefit/<int:pk>/',views.EmployeeBenefitDetailsView.as_view()),
 
 
+
 ]
 
