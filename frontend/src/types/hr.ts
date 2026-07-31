@@ -1,4 +1,4 @@
-export type CivilStatus = 'SINGLE' | 'MARRIED' | 'WINDOWED' | 'SEPERATED' 
+export type CivilStatus = 'SINGLE' | 'MARRIED' | 'WIDOWED' | 'SEPARATED' 
 
 export type EmploymentStatus = 'REGULAR' | 'CONTRACTUAL' | 'PROBATIONARY' | 'PART_TIME'
 

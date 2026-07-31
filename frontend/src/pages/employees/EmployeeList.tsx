@@ -12,20 +12,46 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useState } from 'react';
+import { Button } from '@base-ui/react';
+import { Plus,Pencil,UserX } from 'lucide-react';
+import EmployeeFormSheet
+ from '@/components/employees/EmployeeFormSheet';
+import DeactivaEmployeeDialogProps from '@/components/employees/DeactivateEmployeeDialog';
+import type {Employee} from '@/types/hr'
 
 export default function EmployeeList() {
+  const [sheetOpen,setSheetOpen] = useState(false);
   const { data: employees, isLoading, isError } = useEmployees();
   const { data: departments } = useDepartments();
   const { data: positions } = usePositions();
-
+  const [editingEmployee,setEditingEmployee] = useState<Employee | null>(null);
+  const [deactivateTarget,setDeactivateTarget] = useState<Employee | null>(null);
+  const [deactiveOpen,setDeactivateOpen] = useState(false);
+  
   const deptName = (id: number | null) =>
     departments?.find((d) => d.id === id)?.department_name ?? '—';
 
   const posName = (id: number | null) =>
     positions?.find((p) => p.id === id)?.position_name ?? '—';
 
+  const openAddSheet = () => {
+    setEditingEmployee(null);
+    setSheetOpen(true);
+  }
+
+  const
+
   return (
     <AppShell title="Employees">
+      <div className='flex justify-end mb-4'>
+        <Button onClick={() => setSheetOpen(true)}>
+          <Plus className='h-4 w-4 mr-2'/>
+          Add Employee
+        </Button>
+      </div>
+
+
       <div className="bg-card border rounded-lg">
         <Table>
           <TableHeader>
@@ -86,6 +112,7 @@ export default function EmployeeList() {
           </TableBody>
         </Table>
       </div>
+      <EmployeeFormSheet open={sheetOpen} onOpenChange={setSheetOpen}/>
     </AppShell>
   );
 }
