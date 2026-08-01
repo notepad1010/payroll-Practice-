@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import AppShell from '@/components/layout/AppShell';
 import { useEmployees } from '@/hooks/useEmployees';
 import { useDepartments } from '@/hooks/useDepartments';
@@ -12,23 +13,22 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useState } from 'react';
-import { Button } from '@base-ui/react';
-import { Plus,Pencil,UserX } from 'lucide-react';
-import EmployeeFormSheet
- from '@/components/employees/EmployeeFormSheet';
-import DeactivaEmployeeDialogProps from '@/components/employees/DeactivateEmployeeDialog';
-import type {Employee} from '@/types/hr'
+import { Button } from '@/components/ui/button';
+import { Plus, Pencil, UserX } from 'lucide-react';
+import EmployeeFormSheet from '@/components/employees/EmployeeFormSheet';
+import DeactivateEmployeeDialog from '@/components/employees/DeactivateEmployeeDialog';
+import type { Employee } from '@/types/hr';
 
 export default function EmployeeList() {
-  const [sheetOpen,setSheetOpen] = useState(false);
   const { data: employees, isLoading, isError } = useEmployees();
   const { data: departments } = useDepartments();
   const { data: positions } = usePositions();
-  const [editingEmployee,setEditingEmployee] = useState<Employee | null>(null);
-  const [deactivateTarget,setDeactivateTarget] = useState<Employee | null>(null);
-  const [deactiveOpen,setDeactivateOpen] = useState(false);
-  
+
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
+  const [deactivateTarget, setDeactivateTarget] = useState<Employee | null>(null);
+  const [deactivateOpen, setDeactivateOpen] = useState(false);
+
   const deptName = (id: number | null) =>
     departments?.find((d) => d.id === id)?.department_name ?? '—';
 
@@ -38,19 +38,26 @@ export default function EmployeeList() {
   const openAddSheet = () => {
     setEditingEmployee(null);
     setSheetOpen(true);
-  }
+  };
 
-  
+  const openEditSheet = (emp: Employee) => {
+    setEditingEmployee(emp);
+    setSheetOpen(true);
+  };
+
+  const openDeactivateDialog = (emp: Employee) => {
+    setDeactivateTarget(emp);
+    setDeactivateOpen(true);
+  };
 
   return (
     <AppShell title="Employees">
-      <div className='flex justify-end mb-4'>
-        <Button onClick={() => setSheetOpen(true)}>
-          <Plus className='h-4 w-4 mr-2'/>
+      <div className="flex justify-end mb-4">
+        <Button onClick={openAddSheet}>
+          <Plus className="h-4 w-4 mr-2" />
           Add Employee
         </Button>
       </div>
-
 
       <div className="bg-card border rounded-lg">
         <Table>
@@ -61,13 +68,14 @@ export default function EmployeeList() {
               <TableHead>Position</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Hire Date</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading &&
               Array.from({ length: 5 }).map((_, i) => (
                 <TableRow key={i}>
-                  {Array.from({ length: 5 }).map((_, j) => (
+                  {Array.from({ length: 6 }).map((_, j) => (
                     <TableCell key={j}>
                       <Skeleton className="h-4 w-full" />
                     </TableCell>
@@ -77,7 +85,7 @@ export default function EmployeeList() {
 
             {isError && (
               <TableRow>
-                <TableCell colSpan={5} className="text-center text-red-600 py-8">
+                <TableCell colSpan={6} className="text-center text-red-600 py-8">
                   Failed to load employees.
                 </TableCell>
               </TableRow>
@@ -85,10 +93,7 @@ export default function EmployeeList() {
 
             {!isLoading && !isError && employees?.length === 0 && (
               <TableRow>
-                <TableCell
-                  colSpan={5}
-                  className="text-center text-muted-foreground py-8"
-                >
+                <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
                   No employees yet.
                 </TableCell>
               </TableRow>
@@ -107,12 +112,40 @@ export default function EmployeeList() {
                   </Badge>
                 </TableCell>
                 <TableCell>{emp.hire_Date}</TableCell>
+                <TableCell className="text-right space-x-1">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => openEditSheet(emp)}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => openDeactivateDialog(emp)}
+                    disabled={!emp.is_active}
+                  >
+                    <UserX className="h-4 w-4" />
+                  </Button>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </div>
-      <EmployeeFormSheet open={sheetOpen} onOpenChange={setSheetOpen}/>
+
+      <EmployeeFormSheet
+        open={sheetOpen}
+        onOpenChange={setSheetOpen}
+        employee={editingEmployee}
+      />
+
+      <DeactivateEmployeeDialog
+        employee={deactivateTarget}
+        open={deactivateOpen}
+        onOpenChange={setDeactivateOpen}
+      />
     </AppShell>
   );
 }
