@@ -1,11 +1,11 @@
 import {z} from 'zod';
 
 export const payrollTypeOptions = [
-    'SEMI_MONTHLY',
+    'SEMI_MONTLY',
     'MONTHLY',
     'WEEKLY',
     'BI_WEEKLY',
-];
+]as const;
 
 export const payrunSchema = z.object({
     start_date: z.string().min(1,'Start date is required'),
@@ -14,4 +14,4 @@ export const payrunSchema = z.object({
     payroll_type: z.enum(payrollTypeOptions),
 });
 
-export type PayRunFormValues = z.infer<typeof payrunSchema>
+export type PayRunFormValues = z.infer<typeof payrunSchema>;

@@ -7,6 +7,8 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import Login from '@/pages/Login';
 import Dashboard from '@/pages/Dashboard';
 import EmployeeList from '@/pages/employees/EmployeeList';
+import PayRunList from './pages/payroll/PayRunList';
+import PayRunDetail from '@/pages/payroll/PayRunDetail';
 
 
 export default function App() {
@@ -34,6 +36,25 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
+
+          <Route
+          path="/payroll"
+          element = {
+            <ProtectedRoute>
+              <PayRunList/>
+            </ProtectedRoute>
+          }
+          />
+
+                  <Route
+          path="/payroll/:id"
+          element={
+            <ProtectedRoute>
+              <PayRunDetail />
+            </ProtectedRoute>
+          }
+        />
+
           </Routes>
         </AuthProvider>
       <Toaster/>
