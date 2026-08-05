@@ -9,6 +9,7 @@ import Dashboard from '@/pages/Dashboard';
 import EmployeeList from '@/pages/employees/EmployeeList';
 import PayRunList from './pages/payroll/PayRunList';
 import PayRunDetail from '@/pages/payroll/PayRunDetail';
+import PayslipDetail from '@/pages/payroll/PayslipDetail';
 
 
 export default function App() {
@@ -54,6 +55,15 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route
+  path="/payroll/:id/payslip/:employeeId"
+  element={
+    <ProtectedRoute>
+      <PayslipDetail />
+    </ProtectedRoute>
+  }
+/>
 
           </Routes>
         </AuthProvider>
