@@ -26,15 +26,42 @@ const empName = (id:number) => {
 };
 
 const handlecompute = async () => {
-  if (!payrun) return;
+  if (!payrunId) return;
   try{
       await computePayrun.mutateAsync(payrunId);
     toast.success('Payroll computed successfully')
   }catch{
     toast.error('Payroll compute failed')
-
   }
-}
+};
+
+const formatCurrency = (val:string) =>
+  new Intl.NumberFormat('en-PH',{style:'currency', currency:'PHP'}).format(Number(val));
+
+return(
+  <AppShell title='Pay Run Details'>
+    <Button variant='ghost' size='sm' onClick={() => navigate('/payroll')} className='mb-4'>
+      <ArrowLeft className='h-4 w-4 mr-2'/>
+      Back To Payrun
+    </Button>
+
+  <Card className='mb-6'>
+    <CardContent className='pt-6'>
+      {payrunLoading ? (<Skeleton className='h-6 w-full'/>): payrun ? 
+      (<div className='flex items-center justify-between'>
+        <div>
+          <p className='text-sm text-muted-foreground'>Period</p>
+          <p className='font-medium'>{payrun.start_date} = {payrun.end_date}</p>
+        </div>
+      </div>)}
+    </CardContent>
+
+  </Card>
+
+
+asdada
+  </AppShell>
+)
 
 
 }
