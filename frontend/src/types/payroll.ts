@@ -117,3 +117,11 @@ export interface Payslip {
     generated_at: string;
   };
 }
+
+export interface PayRunResultsResponse{
+  payrun_id: number;
+  start_date: string;
+  end_date: string;
+  total_employee: number;
+  results:PayrollResult[];
+}

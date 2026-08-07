@@ -8,6 +8,7 @@ import {DatePickerField} from '@/components/ui/date-picker-field';
 import {useCreatePayRun} from '@/hooks/usePayroll';
 import {payrunSchema,payrollTypeOptions, type PayRunFormValues} from '@/lib/schemas/payrun';
 import {toast} from 'sonner';
+import { id } from 'date-fns/locale';
 
 
 interface PayRunFormSheetProps {
@@ -54,6 +55,35 @@ export default function PayrunFormSheet({open, onOpenChange}: PayRunFormSheetPro
                 </SheetHeader>
 
                 <form onSubmit={handleSubmit(onSubmit)} className='space-y-4 px-4 py-2'>
+                    <Controller
+                    name='start_date'
+                    control={control}
+                    render={({field}) => (
+                        <DatePickerField
+                        id='start_date'
+                        label='Start Date'
+                        value={field.value}
+                        onChange={field.onChange}
+                        error={errors.start_date?.message}   
+                        />
+                    )}
+                    />
+                    
+                    <Controller
+                    name='end_date'
+                    control={control}
+                    render={({field}) => (
+                    <DatePickerField
+                    id='end_date'
+                    label='End Date'
+                    value={field.value}
+                    onChange={field.onChange}
+                    error={errors.end_date?.message}
+                    />
+                    )}
+                    />
+                    
+                    
                     <Controller
                     name='pay_date'
                     control={control}

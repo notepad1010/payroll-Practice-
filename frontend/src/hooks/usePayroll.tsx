@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import apiClient from '@/lib/api-client';
-import type { PayRun, PayrollResult, Payslip } from '@/types/payroll';
+import type { PayRun, PayrollResult, Payslip, PayRunResultsResponse} from '@/types/payroll';
 
 const PAYRUNS_KEY = ['payruns'];
 
@@ -69,8 +69,8 @@ export function usePayRunResults(payrunId: number | undefined) {
   return useQuery({
     queryKey: ['payrun-results', payrunId],
     queryFn: async () => {
-      const { data } = await apiClient.get<PayrollResult[]>(`/payroll/results/${payrunId}/`);
-      return data;
+      const { data } = await apiClient.get<PayRunResultsResponse>(`/payroll/results/${payrunId}/`);
+      return data.results;
     },
     enabled: !!payrunId,
   });
