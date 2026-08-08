@@ -5,7 +5,7 @@ import {
   usePayRunResults,
   useComputePayRun,
 } from '@/hooks/usePayroll';
-import { useEmployees } from '@/hooks/useEmployees';
+//import { useEmployees } from '@/hooks/useEmployees';
 import {
   Table,
   TableBody,
@@ -28,28 +28,31 @@ export default function PayRunDetail() {
 
   const { data: payrun, isLoading: payrunLoading } = usePayRun(payrunId);
   const { data: results, isLoading: resultsLoading } = usePayRunResults(payrunId);
-  const { data: employees } = useEmployees();
+  //const { data: employees } = useEmployees();
   const computePayRun = useComputePayRun();
 
-  const empName = (id: number) => {
+  /*const empName = (id: number) => {
     const e = employees?.find((emp) => emp.id === id);
     return e ? `${e.first_name} ${e.last_name}` : `Employee #${id}`;
-  };
+  };*/
 
   const handleCompute = async () => {
+    console.log('HandleCompute fired patrunId', payrunId)
     if (!payrunId) return;
     try {
       await computePayRun.mutateAsync(payrunId);
       toast.success('Payroll computed successfully');
-    } catch {
+    } catch(err) {
+      console.error('Compute error', err)
       toast.error('Failed to compute payroll');
     }
   };
 
-  const formatCurrency = (val: string) =>
-    new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(
-      Number(val)
-    );
+ const formatCurrency = (val: string | null | undefined) => {
+  const num = Number(val);
+  if (val == null || Number.isNaN(num)) return '₱0.00';
+  return new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(num);
+};
 
   return (
     <AppShell title="Pay Run Details">
@@ -127,9 +130,9 @@ export default function PayRunDetail() {
             )}
 
             {results?.map((r) => (
-              <TableRow key={r.id}>
-                <TableCell className="font-medium">{empName(r.employee)}</TableCell>
-                <TableCell>{r.total_hours_worked}</TableCell>
+              <TableRow key={r.employee_id}>
+                <TableCell className="font-medium">{r.employee_name}</TableCell>
+                <TableCell>{r.total_worked_hours}</TableCell>
                 <TableCell>{formatCurrency(r.gross_pay)}</TableCell>
                 <TableCell className="text-red-600">
                   -{formatCurrency(r.total_deductions)}
@@ -142,7 +145,7 @@ export default function PayRunDetail() {
                     variant="outline"
                     size="sm"
                     onClick={() =>
-                      navigate(`/payroll/${payrunId}/payslip/${r.employee}`)
+                      navigate(`/payroll/${payrunId}/payslip/${r.employee_id}`)
                     }
                   >
                     View Payslip

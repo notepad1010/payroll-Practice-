@@ -56,7 +56,7 @@ export default function App() {
           }
         />
 
-        <Route
+    <Route
   path="/payroll/:id/payslip/:employeeId"
   element={
     <ProtectedRoute>

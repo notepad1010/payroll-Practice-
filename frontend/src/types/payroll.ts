@@ -85,7 +85,7 @@ export interface PayrollOvertime {
   create: string;
 }
 
-// Shape returned by /api/payroll/payslip/<payrun_id>/employee/<employee_id>/
+// returned by /api/payroll/payslip/<payrun_id>/employee/<employee_id>/
 export interface Payslip {
   employee: {
     id: number;
@@ -118,10 +118,20 @@ export interface Payslip {
   };
 }
 
-export interface PayRunResultsResponse{
+export interface PayRunResultRow {
+  employee_id: number;
+  employee_name: string;
+  total_worked_hours: string;
+  gross_pay: string;
+  total_deductions: string;
+  net_pay: string;
+  generated_at: string;
+}
+
+export interface PayRunResultsResponse {
   payrun_id: number;
   start_date: string;
   end_date: string;
   total_employee: number;
-  results:PayrollResult[];
+  results: PayRunResultRow[];
 }

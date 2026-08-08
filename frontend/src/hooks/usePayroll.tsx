@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import apiClient from '@/lib/api-client';
-import type { PayRun, PayrollResult, Payslip, PayRunResultsResponse} from '@/types/payroll';
+import type { PayRun, Payslip, PayRunResultsResponse} from '@/types/payroll';
 
 const PAYRUNS_KEY = ['payruns'];
 
