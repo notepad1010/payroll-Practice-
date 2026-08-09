@@ -10,6 +10,7 @@ import EmployeeList from '@/pages/employees/EmployeeList';
 import PayRunList from './pages/payroll/PayRunList';
 import PayRunDetail from '@/pages/payroll/PayRunDetail';
 import PayslipDetail from '@/pages/payroll/PayslipDetail';
+import AttendanceList from '@/pages/attendance/AttendanceList';
 
 
 export default function App() {
@@ -61,6 +62,15 @@ export default function App() {
   element={
     <ProtectedRoute>
       <PayslipDetail />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/attendance"
+  element={
+    <ProtectedRoute>
+      <AttendanceList />
     </ProtectedRoute>
   }
 />
