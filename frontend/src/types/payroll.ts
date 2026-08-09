@@ -102,10 +102,10 @@ export interface Payslip {
     pay_date: string;
     payroll_type: string;
   };
-  earnings: { name: string; taxable: boolean; amount: string }[];
-  overtime: { name: string; multiplier: string; hours: string; amount: string }[];
-  benefits: { name: string; amount: string }[];
-  deductions: { name: string; taxable: boolean; amount: string }[];
+  earnings: PayslipEarning[];
+  overtime:PayslipOvertime[];
+  benefits:PayslipBenefit[];
+  deductions: payslipDeduction;
   summary: {
     total_hours_worked: string;
     total_earnings: string;
@@ -134,4 +134,33 @@ export interface PayRunResultsResponse {
   end_date: string;
   total_employee: number;
   results: PayRunResultRow[];
+}
+
+
+export interface PayslipEarning{
+  name:string;
+  taxble:boolean;
+  amount:string;
+}
+
+export interface PayslipOvertime{
+  name:string;
+  multiplier:string;
+  hours:string;
+  amount:String;
+}
+
+export interface PayslipBenefit{
+  name:string;
+  amount:string;
+}
+
+export interface payslipDeduction{
+  name:string;
+  taxable:boolean
+  amoun:string
+}
+
+export interface PayslipApiResponse{
+  payslip:Payslip;
 }
