@@ -131,18 +131,18 @@ const onSubmit = async (values: AttendanceFormValues) => {
           </div>
 
           <Controller
-            name="work_date"
-            control={control}
-            render={({ field }) => (
-              <DatePickerField
-                id="work_date"
-                label="Work Date"
-                value={field.value}
-                onChange={field.onChange}
-                error={errors.work_date?.message}
-              />
-            )}
-          />
+  name="work_date"
+  control={control}
+  render={({ field }) => (
+    <DatePickerField
+      id="work_date"
+      label="Work Date"
+      value={field.value}
+      onChange={field.onChange}
+      error={errors.work_date?.message}
+    />
+  )}
+/>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">

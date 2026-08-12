@@ -19,7 +19,7 @@ import { AlertDialog,
     AlertDialogTitle } from "@/components/ui/alert-dialog";
 import type { Attendance } from "@/types/attendance";
 import {toast} from 'sonner';
-import { id } from "date-fns/locale";
+import { format, parse } from "date-fns";
 
 const statusVariant: Record<string, 'default' | 'secondary' | 'destructive'| 'outline'> = {
     PRESENT:'default',
@@ -28,6 +28,16 @@ const statusVariant: Record<string, 'default' | 'secondary' | 'destructive'| 'ou
     HALF_DAY:'outline',
     LEAVE:'outline',
 };
+
+const formatTime = (time:string | null | undefined) => {
+    if(!time) return '-';
+    try{
+        const parsed = parse(time, 'HH:mm:ss',new Date());
+        return format(parsed,'h:mm a');
+    }catch{
+        return time
+    }
+}
 
 
 export default function AttendanceList() {
@@ -40,10 +50,10 @@ export default function AttendanceList() {
     const [deleteTarget,setDeleteTarget] = useState<Attendance | null>(null)
     const [deleteOpen,setDeleteOpen] = useState(false)
 
-    const empName = (id:number) => {
-        const e = employees?.find((emp) => emp.id === id);
-        return e ? `${e.first_name} ${e.last_name}` : `Employee #${id}`; 
-    }
+    const empName = (id: number) => {
+  const e = employees?.find((emp) => emp.id === id);
+  return e ? `${e.first_name} ${e.last_name}` : `Employee #${id}`;
+};
 
     const openAdd = () => {
         setEditing(null);
@@ -90,7 +100,7 @@ export default function AttendanceList() {
                         <TableHead>Time out</TableHead>
                         <TableHead>Overtime</TableHead>
                         <TableHead>Status</TableHead>
-                        <TableHead className="text-right">Avtion</TableHead>
+                        <TableHead className="text-right">Action</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -122,17 +132,17 @@ export default function AttendanceList() {
 
                         {record?.map((r) => (
                             <TableRow key={r.id}>
-                            <TableCell className="font-medium">{empName(r.id)}</TableCell>
+                            <TableCell className="font-medium">{empName(r.employee)}</TableCell>
                             <TableCell>{r.work_date}</TableCell>
-                            <TableCell>{r.time_in}</TableCell>
-                            <TableCell>{r.time_out}</TableCell>
+                            <TableCell>{formatTime(r.time_in)}</TableCell>
+                            <TableCell>{formatTime(r.time_out)}</TableCell>
                             <TableCell>{r.overtime_hours}</TableCell>
                             <TableCell>
                                 <Badge variant={statusVariant[r.attendance_status] ?? "outline"}>
                                     {r.attendance_status.replace('_','')}
                                 </Badge>
                             </TableCell>
-                            <TableCell className="text-right space-x-1">
+                            <TableCell className="text-right space-y-1">
                                 <Button variant='ghost' size='icon' onClick={() => openEdit(r)}><Pencil className="h-4 w-4"/></Button>
                                 <Button variant='ghost' size='icon' onClick={() =>openDelete(r) }><Trash2 className="h-4 w-4"/></Button>
                             </TableCell>

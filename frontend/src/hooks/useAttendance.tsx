@@ -20,7 +20,7 @@ export function useCreateAttendance() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn:async(payload: Partial<Attendance>) => {
-            const {data} = await apiClient.post<Attendance>('/attendance/attendance/');
+            const {data} = await apiClient.post<Attendance>('/attendance/attendance/',payload);
             return data;
         },
         onSuccess: () => {
