@@ -78,7 +78,7 @@ export default function LeaveRequestFormSheet({
     const onSubmit = async (values:LeaveRequestFormValues) => {
         const payload = {
             ...values,
-            leave_hours:string(values.leave_hours),
+            leave_hours:String(values.leave_hours),
         };
         try {
             if(isEditMode && leaveRequest){
