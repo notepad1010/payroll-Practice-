@@ -11,6 +11,7 @@ import PayRunList from './pages/payroll/PayRunList';
 import PayRunDetail from '@/pages/payroll/PayRunDetail';
 import PayslipDetail from '@/pages/payroll/PayslipDetail';
 import AttendanceList from '@/pages/attendance/AttendanceList';
+import LeaveList from '@/pages/leaves/LeaveList';
 
 
 export default function App() {
@@ -71,6 +72,15 @@ export default function App() {
   element={
     <ProtectedRoute>
       <AttendanceList />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/leave"
+  element={
+    <ProtectedRoute>
+      <LeaveList />
     </ProtectedRoute>
   }
 />

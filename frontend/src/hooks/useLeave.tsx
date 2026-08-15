@@ -2,7 +2,9 @@ import { useQueryClient,useQuery,useMutation, Mutation } from "@tanstack/react-q
 import apiClient from "@/lib/api-client";
 import type { LeaveRequest,LeaveApproval,LeaveCredits,LeaveStatus,LeaveStatusName,LeaveType } from "@/types/attendance";
 
-const LEAVE_REQUEST_KEY = ['leave-request']
+const LEAVE_REQUEST_KEY = ['leave-request'];
+const LEAVE_TYPE_KEY = ['leave-type'];
+const LEAVE_STATUS_KEY = ['leave-status'];
 
 export function useLeaveRequest(){
     return useQuery({
@@ -16,7 +18,7 @@ export function useLeaveRequest(){
 
 export function useLeaveType(){
     return useQuery({
-        queryKey:LEAVE_REQUEST_KEY,
+        queryKey:LEAVE_TYPE_KEY,
         queryFn:async () => {
             const {data} = await apiClient.get<LeaveType[]>('/attendance/leave-type/')
             return data
@@ -26,7 +28,7 @@ export function useLeaveType(){
 
 export function useLeaveStatues(){
     return useQuery({
-        queryKey:LEAVE_REQUEST_KEY,
+        queryKey:LEAVE_STATUS_KEY,
         queryFn:async () => {
             const {data} = await apiClient.get<LeaveStatus[]>('attendance/leave-status/')
             return data
@@ -66,7 +68,7 @@ export function useDeleteLeaveRequest() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async(id:number) => {
-            const {data} = await apiClient.delete<LeaveRequest>(`attendance/leave-request/${id}`)
+            const {data} = await apiClient.delete<LeaveRequest>(`attendance/leave-request/${id}/`)
             return data
         },
         onSuccess: () => {
