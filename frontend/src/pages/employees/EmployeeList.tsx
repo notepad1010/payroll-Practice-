@@ -14,9 +14,10 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { Plus, Pencil, UserX } from 'lucide-react';
+import { Plus, Pencil, UserX, DollarSign } from 'lucide-react';
 import EmployeeFormSheet from '@/components/employees/EmployeeFormSheet';
 import DeactivateEmployeeDialog from '@/components/employees/DeactivateEmployeeDialog';
+import SalaryHistoryFormSheet from '@/components/employees/SalaryHistoryFormSheet';
 import type { Employee } from '@/types/hr';
 
 export default function EmployeeList() {
@@ -28,6 +29,8 @@ export default function EmployeeList() {
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
   const [deactivateTarget, setDeactivateTarget] = useState<Employee | null>(null);
   const [deactivateOpen, setDeactivateOpen] = useState(false);
+  const [salarySheetOpen, setSalarySheetOpen] = useState(false);
+  const [salaryEmployeeId, setSalaryEmployeeId] = useState<number | null>(null);
 
   const deptName = (id: number | null) =>
     departments?.find((d) => d.id === id)?.department_name ?? '—';
@@ -48,6 +51,11 @@ export default function EmployeeList() {
   const openDeactivateDialog = (emp: Employee) => {
     setDeactivateTarget(emp);
     setDeactivateOpen(true);
+  };
+
+  const openSalarySheet = (emp: Employee) => {
+    setSalaryEmployeeId(emp.id);
+    setSalarySheetOpen(true);
   };
 
   return (
@@ -111,8 +119,16 @@ export default function EmployeeList() {
                     {emp.employment_status}
                   </Badge>
                 </TableCell>
-                <TableCell>{emp.hire_Date}</TableCell>
+                <TableCell>{emp.hire_date}</TableCell>
                 <TableCell className="text-right space-x-1">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => openSalarySheet(emp)}
+                    title="Add salary record"
+                  >
+                    <DollarSign className="h-4 w-4" />
+                  </Button>
                   <Button
                     variant="ghost"
                     size="icon"
@@ -146,6 +162,14 @@ export default function EmployeeList() {
         open={deactivateOpen}
         onOpenChange={setDeactivateOpen}
       />
+
+      {salaryEmployeeId !== null && (
+        <SalaryHistoryFormSheet
+          open={salarySheetOpen}
+          onOpenChange={setSalarySheetOpen}
+          employeeId={salaryEmployeeId}
+        />
+      )}
     </AppShell>
   );
 }

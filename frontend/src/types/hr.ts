@@ -34,7 +34,7 @@ export interface Employee{
     employment_status:EmploymentStatus;
     position:number | null;
     department:number | null;
-    hire_Date:string;
+    hire_date:string;
     supervisor:number | null;
     is_active: boolean;
     photo_path:string;

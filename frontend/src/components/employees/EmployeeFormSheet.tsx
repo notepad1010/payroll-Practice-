@@ -62,7 +62,7 @@ useEffect (() => {
       employment_status:employee.employment_status,
       position:employee.position ?? undefined,
       department: employee.department ?? undefined,
-      hire_date: employee.hire_Date,
+      hire_date: employee.hire_date,
     });
   }else if (open && !employee){
     reset({
