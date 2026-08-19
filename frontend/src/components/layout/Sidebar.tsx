@@ -1,3 +1,4 @@
+import { Landmark } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -14,6 +15,7 @@ const navItems = [
   { label: 'Attendance', to: '/attendance', icon: ClockAlert },
   { label: 'Leave', to: '/leave', icon: CalendarDays },
   { label: 'Payroll', to: '/payroll', icon: Wallet },
+  { label: 'Contributions', to: '/contributions', icon: Landmark },
 ];
 
 export default function Sidebar() {

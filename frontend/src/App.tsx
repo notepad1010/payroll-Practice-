@@ -12,6 +12,7 @@ import PayRunDetail from '@/pages/payroll/PayRunDetail';
 import PayslipDetail from '@/pages/payroll/PayslipDetail';
 import AttendanceList from '@/pages/attendance/AttendanceList';
 import LeaveList from '@/pages/leaves/LeaveList';
+import ContributionsPage from '@/pages/contributions/ContributionsPage';
 
 
 export default function App() {
@@ -81,6 +82,15 @@ export default function App() {
   element={
     <ProtectedRoute>
       <LeaveList />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/contributions"
+  element={
+    <ProtectedRoute>
+      <ContributionsPage />
     </ProtectedRoute>
   }
 />
