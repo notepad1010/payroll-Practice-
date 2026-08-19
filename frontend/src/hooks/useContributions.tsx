@@ -77,4 +77,48 @@ export function useCreatePagIbig() {
     })
 }
 
+export function useUpdatePagIbig(){
+    const qc = useQueryClient();
+    return useMutation({
+        mutationFn: async ({id,payload}:{id:number;payload:Partial<PagIBIGContribution>}) => {
+            const {data} = await apiClient.put<PagIBIGContribution>(`/contributions/pag-ibig/${id}`,payload)
+            return data
+        },
+        onSuccess: () => qc.invalidateQueries({queryKey:['pagibig']}),
+    })
+}
+
+export function useDetelePagibig(){
+    const qc = useQueryClient();
+    return useMutation({
+        mutationFn: async (id: number) => {
+            const {data} = await apiClient.delete<PagIBIGContribution>(`/contributions/pag-ibig/${id}/`)
+            return data
+        },
+        onSuccess: () => qc.invalidateQueries({queryKey:['pagibig']})
+    })
+}
+
+//Undone task
+export function usePhilhealthContribution() {
+    return useQuery({
+        queryKey:['philhealth'],
+        queryFn: async () => {
+            const {data} = await apiClient.get<PhilhealthContribution[]>('contributions/philhealth/')
+            return data
+        },
+    });
+}
+
+
+export function useCreatePhihealth() {
+    const qc = useQueryClient()
+    return useMutation({
+        mutationFn: async (payload:Partial<PagIBIGContribution>) => {
+            const {data} = await apiClient.post<PhilhealthContribution>('contribution/philhealth',payload)
+            return data
+        },
+        onSuccess: () => qc.invalidateQueries({queryKey:['philhealth']})
+    })
+}
 
